@@ -490,14 +490,14 @@ class BertWorker(Process):
         from tensorflow.python.estimator.run_config import RunConfig
         from tensorflow.python.estimator.model_fn import EstimatorSpec
 
+        tf.keras.backend.set_learning_phase(0)
+
         def model_fn(features, labels, mode, params):
             with tf.io.gfile.GFile(self.graph_path, 'rb') as f:
                 graph_def = tf.compat.v1.GraphDef()
                 graph_def.ParseFromString(f.read())
 
             input_names = ['input_ids', 'input_mask', 'input_type_ids']
-
-            tf.keras.backend.set_learning_phase(0)
 
             output = tf.import_graph_def(graph_def,
                                          input_map={k + ':0': features[k] for k in input_names},
