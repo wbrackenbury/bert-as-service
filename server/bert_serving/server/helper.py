@@ -119,7 +119,7 @@ def get_args_parser():
                         help='Whether to add position embeddings for the position of each token in the sequence.')
     group2.add_argument('-num_labels', type=int, default=2,
                         help='Numbers of Label')
-    
+
     group3 = parser.add_argument_group('Serving Configs',
                                        'config how server utilizes GPU/CPU resources')
     group3.add_argument('-port', '-port_in', '-port_data', type=int, default=5555,
@@ -185,7 +185,7 @@ def import_tf(device_id=-1, verbose=False, use_fp16=False):
     os.environ['TF_FP16_MATMUL_USE_FP32_COMPUTE'] = '0' if use_fp16 else '1'
     os.environ['TF_FP16_CONV_USE_FP32_COMPUTE'] = '0' if use_fp16 else '1'
     import tensorflow as tf
-    tf.logging.set_verbosity(tf.logging.DEBUG if verbose else tf.logging.ERROR)
+    tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.DEBUG if verbose else tf.compat.v1.logging.ERROR)
     return tf
 
 

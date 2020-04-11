@@ -22,7 +22,7 @@ from tensorflow.python.estimator.run_config import RunConfig
 from tensorflow.python.estimator.training import TrainSpec, EvalSpec, train_and_evaluate
 
 os.environ['CUDA_VISIBLE_DEVICES'] = str(GPUtil.getFirstAvailable()[0])
-tf.logging.set_verbosity(tf.logging.INFO)
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
 
 train_fp = ['/data/cips/data/lab/data/dataset/final_all_data/exercise_contest/data_train.json']
 eval_fp = ['/data/cips/data/lab/data/dataset/final_all_data/exercise_contest/data_test.json']
@@ -57,7 +57,7 @@ def get_encodes(x):
     return features, labels
 
 
-config = tf.ConfigProto()
+config = tf.compat.v1.ConfigProto()
 config.gpu_options.allow_growth = True
 run_config = RunConfig(model_dir='/data/cips/save/law-model',
                        session_config=config,
@@ -72,9 +72,9 @@ estimator = DNNClassifier(
     dropout=0.1)
 
 input_fn = lambda fp: (tf.data.TextLineDataset(fp)
-                       .apply(tf.contrib.data.shuffle_and_repeat(buffer_size=10000))
+                       .apply(tf.data.experimental.shuffle_and_repeat(buffer_size=10000))
                        .batch(batch_size)
-                       .map(lambda x: tf.py_func(get_encodes, [x], [tf.float32, tf.string], name='bert_client'),
+                       .map(lambda x: tf.compat.v1.py_func(get_encodes, [x], [tf.float32, tf.string], name='bert_client'),
                             num_parallel_calls=num_parallel_calls)
                        .map(lambda x, y: ({'feature': x}, y))
                        .prefetch(20))

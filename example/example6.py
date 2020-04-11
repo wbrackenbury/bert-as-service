@@ -17,7 +17,7 @@ import tensorflow as tf
 from bert_serving.client import BertClient
 
 os.environ['CUDA_VISIBLE_DEVICES'] = str(GPUtil.getFirstAvailable()[0])
-tf.logging.set_verbosity(tf.logging.INFO)
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.INFO)
 
 with open('README.md') as fp:
     data = [v for v in fp if v.strip()]
@@ -27,7 +27,7 @@ with open('README.md') as fp:
 
 # write tfrecords
 
-with tf.python_io.TFRecordWriter('tmp.tfrecord') as writer:
+with tf.io.TFRecordWriter('tmp.tfrecord') as writer:
     def create_float_feature(values):
         return tf.train.Feature(float_list=tf.train.FloatList(value=values))
 
@@ -48,16 +48,16 @@ num_hidden_unit = 768
 
 def _decode_record(record):
     """Decodes a record to a TensorFlow example."""
-    return tf.parse_single_example(record, {
-        'features': tf.FixedLenFeature([num_hidden_unit], tf.float32),
-        'labels': tf.FixedLenFeature([], tf.int64),
+    return tf.io.parse_single_example(serialized=record, features={
+        'features': tf.io.FixedLenFeature([num_hidden_unit], tf.float32),
+        'labels': tf.io.FixedLenFeature([], tf.int64),
     })
 
 
-ds = (tf.data.TFRecordDataset('tmp.tfrecord').repeat().shuffle(buffer_size=100).apply(
-    tf.contrib.data.map_and_batch(lambda record: _decode_record(record), batch_size=64))
-      .make_one_shot_iterator().get_next())
+ds = (tf.compat.v1.data
+      .make_one_shot_iterator(tf.data.TFRecordDataset('tmp.tfrecord').repeat().shuffle(buffer_size=100).apply(
+    tf.data.experimental.map_and_batch(lambda record: _decode_record(record), batch_size=64))).get_next())
 
-with tf.Session() as sess:
+with tf.compat.v1.Session() as sess:
     while True:
         print(sess.run(ds))

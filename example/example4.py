@@ -38,14 +38,14 @@ def get_encodes(x):
     return features, labels
 
 
-data_node = (tf.data.TextLineDataset(train_fp).batch(batch_size)
-             .map(lambda x: tf.py_func(get_encodes, [x], [tf.float32, tf.int64], name='bert_client'),
+data_node = (tf.compat.v1.data
+             .make_one_shot_iterator(tf.data.TextLineDataset(train_fp).batch(batch_size)
+             .map(lambda x: tf.compat.v1.py_func(get_encodes, [x], [tf.float32, tf.int64], name='bert_client'),
                   num_parallel_calls=num_parallel_calls)
-             .map(lambda x, y: {'feature': x, 'label': y})
-             .make_one_shot_iterator().get_next())
+             .map(lambda x, y: {'feature': x, 'label': y})).get_next())
 
-with tf.Session() as sess:
-    sess.run(tf.global_variables_initializer())
+with tf.compat.v1.Session() as sess:
+    sess.run(tf.compat.v1.global_variables_initializer())
     cnt, num_samples, start_t = 0, 0, time.perf_counter()
     while True:
         x = sess.run(data_node)
