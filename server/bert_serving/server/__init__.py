@@ -530,11 +530,9 @@ class BertWorker(Process):
         logger.info('use device %s, load graph from %s' %
                     ('cpu' if self.device_id < 0 else ('gpu: %d' % self.device_id), self.graph_path))
 
-        from tensorflow.keras.backend import set_learning_phase
-
-        set_learning_phase(0)
-
         tf = import_tf(self.device_id, self.verbose, use_fp16=self.use_fp16)
+        tf.keras.backend.set_learning_phase(0)
+
         estimator = self.get_estimator(tf)
 
         for sock, addr in zip(receivers, self.worker_address):
