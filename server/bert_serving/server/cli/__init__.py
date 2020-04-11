@@ -1,6 +1,10 @@
 def main():
     from bert_serving.server import BertServer
     from bert_serving.server.helper import get_run_args
+
+    import tensorflow as tf
+    tf.compat.v1.disable_eager_execution()
+
     with BertServer(get_run_args()) as server:
         server.join()
 
