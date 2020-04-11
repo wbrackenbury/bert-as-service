@@ -503,10 +503,7 @@ class BertWorker(Process):
                                          input_map={k + ':0': features[k] for k in input_names},
                                          return_elements=['final_encodes:0'])
 
-
-            print("\n\n\n" + mode + "\n\n\n")
-
-            return EstimatorSpec(mode=mode, predictions={
+            return EstimatorSpec(mode='infer', predictions={
                 'client_id': features['client_id'],
                 'encodes': output[0]
             })
