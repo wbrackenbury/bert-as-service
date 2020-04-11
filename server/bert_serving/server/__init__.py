@@ -499,6 +499,8 @@ class BertWorker(Process):
 
             input_names = ['input_ids', 'input_mask', 'input_type_ids']
 
+            tf.keras.backend.set_learning_phase(0)
+
             output = tf.import_graph_def(graph_def,
                                          input_map={k + ':0': features[k] for k in input_names},
                                          return_elements=['final_encodes:0'])
