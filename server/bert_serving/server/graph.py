@@ -59,8 +59,6 @@ def optimize_graph(args, logger=None):
         with tf.io.gfile.GFile(config_fp, 'r') as f:
             bert_config = modeling.BertConfig.from_dict(json.load(f))
 
-        tf.keras.backend.set_learning_phase(0)
-
         logger.info('build graph...')
         # input placeholders, not sure if they are friendly to XLA
         input_ids = tf.compat.v1.placeholder(tf.int32, (None, None), 'input_ids')
@@ -80,6 +78,10 @@ def optimize_graph(args, logger=None):
                 token_type_ids=input_type_ids,
                 use_one_hot_embeddings=False,
                 use_position_embeddings=not args.no_position_embeddings)
+
+
+
+            raise ValueError(model.summary())
 
             if args.pooling_strategy == PoolingStrategy.CLASSIFICATION:
                 hidden_size = model.pooled_output.shape[-1].value
