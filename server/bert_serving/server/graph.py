@@ -171,7 +171,7 @@ def optimize_graph(args, logger=None):
                 [dtype.as_datatype_enum for dtype in dtypes],
                 False)
 
-            tf.keras.set_learning_phase(0)
+            tf.keras.backend.set_learning_phase(0)
 
             logger.info('freeze...')
             tmp_g = convert_variables_to_constants(sess, tmp_g, [n.name[:-2] for n in output_tensors],
