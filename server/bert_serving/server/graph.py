@@ -59,6 +59,8 @@ def optimize_graph(args, logger=None):
         with tf.io.gfile.GFile(config_fp, 'r') as f:
             bert_config = modeling.BertConfig.from_dict(json.load(f))
 
+        tf.keras.backend.set_learning_phase(0)
+
         logger.info('build graph...')
         # input placeholders, not sure if they are friendly to XLA
         input_ids = tf.compat.v1.placeholder(tf.int32, (None, None), 'input_ids')
@@ -170,8 +172,6 @@ def optimize_graph(args, logger=None):
                 [n.name[:-2] for n in output_tensors],
                 [dtype.as_datatype_enum for dtype in dtypes],
                 False)
-
-            tf.keras.backend.set_learning_phase(0)
 
             logger.info('freeze...')
             tmp_g = convert_variables_to_constants(sess, tmp_g, [n.name[:-2] for n in output_tensors],
